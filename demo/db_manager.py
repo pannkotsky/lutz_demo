@@ -53,6 +53,7 @@ class DBManager:
 
 if __name__ == '__main__':
     from demo.initdata import db
+    from demo.models import Person
 
     manager = DBManager()
     manager.store_db(db)
@@ -60,12 +61,12 @@ if __name__ == '__main__':
 
     sue = manager.get('sue')
     print(sue)
-    sue['age'] = 40
+    sue.age = 40
     manager.set('sue', sue)
 
     print(manager.get('sue'))
 
-    rob = {'name': 'Rob', 'age': 25, 'pay': 100000, 'job': 'fucher'}
+    rob = Person('Rob', age=25, pay=100000, job='fucher')
     db = {'rob': rob}
     manager.store_db(db, update=True)
     print(manager.load_db())

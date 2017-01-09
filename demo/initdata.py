@@ -1,6 +1,9 @@
-bob = {'name': 'Bob Smith', 'age': 42, 'pay': 30000, 'job': 'dev'}
-sue = {'name': 'Sue Jones', 'age': 45, 'pay': 40000, 'job': 'hdw'}
-tom = {'name': 'Tom', 'age': 50, 'pay': 0, 'job': None}
+from .models import Person
+
+
+bob = Person('Bob Smith', age=42, pay=30000, job='dev')
+sue = Person('Sue Jones', age=45, pay=40000, job='hdw')
+tom = Person('Tom', age=50)
 
 db = {}
 
