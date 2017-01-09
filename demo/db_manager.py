@@ -3,72 +3,69 @@ import shelve
 DBFILENAME = 'people-file'
 
 
-def get(key, dbfilename=DBFILENAME):
-    """Get item from the store by the given key"""
-    with shelve.open(dbfilename) as db:
-        return db.get(key)
+class DBManager:
+    def __init__(self, dbfilename=DBFILENAME):
+        self.dbfilename = dbfilename
 
+    def get(self, key):
+        """Get item from the store by the given key"""
+        with shelve.open(self.dbfilename) as db:
+            return db.get(key)
 
-def set(key, item, dbfilename=DBFILENAME):
-    """Add or update item under the given key"""
-    with shelve.open(dbfilename) as db:
-        db[key] = item
+    def set(self, key, item):
+        """Add or update item under the given key"""
+        with shelve.open(self.dbfilename) as db:
+            db[key] = item
 
+    def remove(self, key):
+        """Remove item from the store by the given key if it exists"""
+        with shelve.open(self.dbfilename) as db:
+            if key in db:
+                db.pop(key)
 
-def remove(key, dbfilename=DBFILENAME):
-    """Remove item from the store by the given key if it exists"""
-    with shelve.open(dbfilename) as db:
-        if key in db:
-            db.pop(key)
+    def store_db(self, dbdata, update=False):
+        """
+        Store data to a file storage
 
+        :param dbdata: dict of dicts, data to store in database
+        :param update: bool, whether to update old data in the storage or drop
+        it and create new db from scratch
+        :return: None
+        """
 
-def store_db(dbdata, dbfilename=DBFILENAME, update=False):
-    """
-    Store data to a file storage
+        with shelve.open(self.dbfilename) as db:
+            if not update:
+                db.clear()
+            db.update(dbdata)
 
-    :param dbdata: dict of dicts, data to store in database
-    :param dbfilename: str, name of the storage file
-    :param update: bool, whether to update old data in the storage or drop it
-    :return: None
-    """
+    def load_db(self):
+        """
+        Restore data from file storage reconstructing the db
 
-    with shelve.open(dbfilename) as db:
-        if not update:
-            db.clear()
-        db.update(dbdata)
+        :return: dict of dicts, data loaded from database
+        """
 
-
-def load_db(dbfilename=DBFILENAME):
-    """
-    Restore data from file storage reconstructing the db
-
-    :param dbfilename: str, name of the storage file
-    :return: dict of dicts, data loaded from database
-    """
-
-    with shelve.open(dbfilename) as db:
-        dbdata = {}
-        dbdata.update(db)
-        return dbdata
+        with shelve.open(self.dbfilename) as db:
+            dbdata = {}
+            dbdata.update(db)
+            return dbdata
 
 
 if __name__ == '__main__':
     from demo.initdata import db
-    store_db(db)
-    print(load_db())
 
-    db = shelve.open(DBFILENAME)
-    print(db['sue'])
-    sue = db['sue']
+    manager = DBManager()
+    manager.store_db(db)
+    print(manager.load_db())
+
+    sue = manager.get('sue')
+    print(sue)
     sue['age'] = 40
-    db['sue'] = sue
-    db.close()
+    manager.set('sue', sue)
 
-    db = shelve.open(DBFILENAME)
-    print(db['sue'])
-    db.close()
+    print(manager.get('sue'))
 
     rob = {'name': 'Rob', 'age': 25, 'pay': 100000, 'job': 'fucher'}
     db = {'rob': rob}
-    store_db(db, update=True)
-    print(load_db())
+    manager.store_db(db, update=True)
+    print(manager.load_db())
