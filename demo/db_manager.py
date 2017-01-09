@@ -3,11 +3,23 @@ import shelve
 DBFILENAME = 'people-file'
 
 
-def add_item(key, item, dbfilename=DBFILENAME):
-    """Add item to storage under the given key"""
-    db = shelve.open(dbfilename)
-    db[key] = item
-    db.close()
+def get(key, dbfilename=DBFILENAME):
+    """Get item from the store by the given key"""
+    with shelve.open(dbfilename) as db:
+        return db.get(key)
+
+
+def set(key, item, dbfilename=DBFILENAME):
+    """Add or update item under the given key"""
+    with shelve.open(dbfilename) as db:
+        db[key] = item
+
+
+def remove(key, dbfilename=DBFILENAME):
+    """Remove item from the store by the given key if it exists"""
+    with shelve.open(dbfilename) as db:
+        if key in db:
+            db.pop(key)
 
 
 def store_db(dbdata, dbfilename=DBFILENAME, update=False):
@@ -20,11 +32,10 @@ def store_db(dbdata, dbfilename=DBFILENAME, update=False):
     :return: None
     """
 
-    db = shelve.open(dbfilename)
-    if not update:
-        db.clear()
-    db.update(dbdata)
-    db.close()
+    with shelve.open(dbfilename) as db:
+        if not update:
+            db.clear()
+        db.update(dbdata)
 
 
 def load_db(dbfilename=DBFILENAME):
@@ -35,11 +46,10 @@ def load_db(dbfilename=DBFILENAME):
     :return: dict of dicts, data loaded from database
     """
 
-    db = shelve.open(dbfilename)
-    dbdata = {}
-    dbdata.update(db)
-    db.close()
-    return dbdata
+    with shelve.open(dbfilename) as db:
+        dbdata = {}
+        dbdata.update(db)
+        return dbdata
 
 
 if __name__ == '__main__':
