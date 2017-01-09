@@ -1,3 +1,6 @@
 .idea
 
+*.egg-info
+*.pyc
+
 demo/people-file

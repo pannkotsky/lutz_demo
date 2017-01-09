@@ -1,10 +1,10 @@
 import shelve
 
-DBFILENAME = 'people-file'
+from demo import settings
 
 
 class DBManager:
-    def __init__(self, dbfilename=DBFILENAME):
+    def __init__(self, dbfilename=settings.DBFILENAME):
         self.dbfilename = dbfilename
 
     def get(self, key):
@@ -61,12 +61,14 @@ if __name__ == '__main__':
 
     sue = manager.get('sue')
     print(sue)
+    print(sue.to_dict())
     sue.age = 40
     manager.set('sue', sue)
 
     print(manager.get('sue'))
 
-    rob = Person('Rob', age=25, pay=100000, job='fucher')
+    d = {'name': 'Rob', 'age': 25}
+    rob = Person.from_dict(d)
     db = {'rob': rob}
     manager.store_db(db, update=True)
     print(manager.load_db())
