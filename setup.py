@@ -13,9 +13,9 @@ setup(
     install_requires=[],
     entry_points={
         'console_scripts': [
-            'person-list = demo.shell:person_list',
-            'person-get = demo.shell:person_get',
-            'person-add = demo.shell:person_add'
+            'person-list = demo.interfaces.shell.shell:person_list',
+            'person-get = demo.interfaces.shell.shell:person_get',
+            'person-add = demo.interfaces.shell.shell:person_add'
         ]
     },
     classifiers=[
